@@ -3,7 +3,7 @@
 # Environment: Source Engine
 # Minimum Panel Version: 0.6.0
 # ----------------------------------
-FROM        ubuntu:16.04
+FROM        ubuntu:14.04
 
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 ENV         DEBIAN_FRONTEND noninteractive
@@ -11,7 +11,7 @@ ENV         DEBIAN_FRONTEND noninteractive
 RUN         dpkg --add-architecture i386 \
             && apt-get update \
             && apt-get upgrade -y \
-            && apt-get install -y tar curl gcc g++ lib32gcc1 lib32tinfo5 lib32z1 lib32stdc++6 libtinfo5:i386 libncurses5:i386 libcurl3-gnutls:i386 \
+            && apt-get install -y curl lib32gcc1 lsof git \
             && useradd -m -d /home/container container
 
 USER        container
