@@ -10,6 +10,8 @@ if [[ ${UPDATE} == "1" ]]; then
 	fi
 fi
 
+export MONO_IOMAP=all
+
 if [[ -f /home/container/preflight.sh ]]; then
 	/home/container/preflight.sh
 fi
@@ -19,6 +21,10 @@ cd /home/container
 # Replace Startup Variables
 MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')`
 echo ":/home/container ${MODIFIED_STARTUP}"
+
+if if [ ! -z "$ULIMIT" ]; then
+	ulimit -n ${ULIMIT}
+fi
 
 # Run the Server
 ${MODIFIED_STARTUP}
