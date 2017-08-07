@@ -11,7 +11,7 @@ ENV         DEBIAN_FRONTEND noninteractive
 RUN         dpkg --add-architecture i386 \
             && apt-get update \
             && apt-get upgrade -y \
-            && apt-get install -y apt-utils cron tar curl ca-certificates net-tools unzip gcc g++ lib32gcc1 lib32tinfo5 lib32z1 libtinfo5:i386 libncurses5:i386 libcurl3-gnutls:i386 \
+            && apt-get install -y tar curl unzip gcc g++ lib32gcc1 lib32tinfo5 lib32z1 libtinfo5:i386 libncurses5:i386 libcurl3-gnutls:i386 \
                                   lib32stdc++6 \
                                   mono-runtime mono-reference-assemblies-2.0 \
                                   libc6:i386 libgl1-mesa-glx:i386 libxcursor1:i386 libxrandr2:i386 \
