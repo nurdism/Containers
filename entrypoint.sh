@@ -10,6 +10,10 @@ if [[ ${UPDATE} == "1" ]]; then
 	fi
 fi
 
+if [[ -f /home/container/preflight.sh ]]; then
+	/home/container/preflight.sh
+fi
+
 cd /home/container
 
 # Replace Startup Variables
