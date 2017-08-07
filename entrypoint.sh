@@ -22,7 +22,7 @@ cd /home/container
 MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')`
 echo ":/home/container ${MODIFIED_STARTUP}"
 
-if if [ ! -z "$ULIMIT" ]; then
+if [ ! -z "$ULIMIT" ]; then
 	ulimit -n ${ULIMIT}
 fi
 
