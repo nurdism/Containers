@@ -1,6 +1,7 @@
 #!/bin/bash
 sleep 5
 
+#FastDL Functions
 fastdl_search() {
 
 	SOUND="$1/sound"
@@ -78,8 +79,23 @@ fastdl_add() {
     done
 }
 
-# Adding Fastdl Support
+#Install the Server
+if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
+	if [[ -f /home/container/steam.txt ]]; then
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +runscript /home/container/steam.txt
+	else
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +quit
+	fi
+fi
 
+#steamclient.so fix
+if [[ ! -L /home/container/.steam/sdk32/steamclient.so ]]; then
+	mkdir -p /home/container/.steam/sdk32
+	cd /home/container/.steam/sdk32
+	ln -s ../../steamcmd/linux32/steamclient.so steamclient.so
+fi
+
+# Adding Fastdl Support
 if [[ ${FASTDL} == "1" ]]; then
     MAPS="/home/container/garrysmod/maps"
     ADDONS="/home/container/garrysmod/addons"
@@ -109,23 +125,6 @@ if [[ ${FASTDL} == "1" ]]; then
             bzip2 "${FILE_NAME}"
         fi
     done
-fi
-
-
-#Install the Server
-if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
-	if [[ -f /home/container/steam.txt ]]; then
-		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +runscript /home/container/steam.txt
-	else
-		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +quit
-	fi
-fi
-
-#steamclient.so fix
-if [[ ! -L /home/container/.steam/sdk32/steamclient.so ]]; then
-	mkdir -p /home/container/.steam/sdk32
-	cd /home/container/.steam/sdk32
-	ln -s ../../steamcmd/linux32/steamclient.so steamclient.so
 fi
 
 cd /home/container
