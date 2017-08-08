@@ -54,7 +54,7 @@ if [ ! -z "$ULIMIT" ]; then
 fi
 
 # Run the Server
-${MODIFIED_STARTUP}
+node /wrapper.js ${MODIFIED_STARTUP}
 
 #Error
 if [ $? -ne 0 ]; then
