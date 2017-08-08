@@ -234,18 +234,7 @@ fs.access( exe, fs.constants.X_OK, (err) => {
       console.log(`[${stamp("MM:DD HH:mm:ss")}] ${data}`);
     });
 
-    const unturned = spawn( exe, ['nographics', '-batchmode', `-logfile Servers/${instance}/unturned.log`, `+secureserver/${instance}`]);
-    unturned.stdin.setEncoding('utf-8');
-    unturned.stdout.pipe(process.stdout);
-
-    process.stdin.setEncoding("utf8");
-    process.stdin.on('readable', () => {
-      const chunk = process.stdin.read();
-      if (chunk !== null) {
-        unturned.stdin.write(chunk);
-      }
-    });
-
+    const unturned = spawn( exe, ['nographics', '-batchmode', `-logfile Servers/${instance}/unturned.log`, `+secureserver/${instance}`], { cwd,  shell: true, stdio: 'inherit' });
     unturned.on('exit', (code) => {
       process.exit(code);
     });
