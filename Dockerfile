@@ -21,4 +21,5 @@ ENV         HOME /home/container
 WORKDIR     /home/container
 
 COPY        ./entrypoint.sh /entrypoint.sh
+COPY        ./wrapper.js /wrapper.js
 CMD         ["/bin/bash", "/entrypoint.sh"]
