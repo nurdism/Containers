@@ -3,8 +3,8 @@ const path = require('path');
 const cwd = process.cwd();
 const fs = require('fs');
 
-fs.access(path.join(cwd, 'Unturned_Headless.x86'), fs.constants.X_OK, (err) => {
-  if(err){
+fs.access( path.join(cwd, 'Unturned_Headless.x86'), fs.constants.X_OK, (err) => {
+  if (err) {
     console.log("Error: 'Unturned_Headless.x86' is not found or is missing permissions to execute!");
     process.exit(1);
   }
@@ -12,7 +12,7 @@ fs.access(path.join(cwd, 'Unturned_Headless.x86'), fs.constants.X_OK, (err) => {
   const instance = process.argv[2];
   const logfile = path.join(cwd, `${instance}.console`);
 
-  fs.access(path, fs.F_OK, (err) => {
+  fs.access(path, fs.constants.F_OK, (err) => {
     if (err) {
       fs.closeSync(fs.openSync(logfile, 'w'));
     }
@@ -30,6 +30,13 @@ fs.access(path.join(cwd, 'Unturned_Headless.x86'), fs.constants.X_OK, (err) => {
       if (chunk !== null) {
         unturned.stdin.write(chunk);
       }
+    });
+
+    unturned.on('exit', (code) => {
+      process.exit(code);
+    });
+    unturned.on('close', (code) => {
+      process.exit(code);
     });
   });
 });
