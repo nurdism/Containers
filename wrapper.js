@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const port = parseInt(process.argv[2]);
 
-if(port){
+if ( port && port > 0) {
   require('http')
     .createServer((req, res) => {
       fs.readFile(path.join(cwd, 'fastdl', req['url']), (err, data) => {
@@ -21,7 +21,7 @@ if(port){
 }
 
 let exe = process.argv[3];
-let args = process.argv.slice(4, process.argv.length).map( (arg,i,a) => {
+let args = process.argv.slice(4, process.argv.length).map( (arg, i, a) => {
   if (( arg.startsWith("-") || arg.startsWith("+"))) {
     if( a[i+1].startsWith("-") || a[i+1].startsWith("+")){
       return arg

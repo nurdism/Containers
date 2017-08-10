@@ -79,6 +79,9 @@ fastdl_add() {
     done
 }
 
+# SQL Connections
+echo $(netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}') dockerhost >> /etc/hosts
+
 #Install the Server
 if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
 	if [[ -f /home/container/steam.txt ]]; then
