@@ -92,8 +92,7 @@ fastdl_bz2() {
 
 # SQL Connections
 DOCKERHOST=$(netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}')
-echo "adding ${DOCKERHOST} to /etc/hosts as dockerhost"
-echo "${DOCKERHOST} dockerhost" >> /etc/hosts
+echo "DOCKERHOST IP: ${DOCKERHOST}"
 
 #Install the Server
 if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
