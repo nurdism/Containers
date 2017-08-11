@@ -13,32 +13,25 @@ if ( port && port > 0) {
       const ext = /(?:\.([^.]+))?$/.exec(req['url'])[1];
 
       if(!fs.existsSync(file)){
-        res.writeHead(404, {'Content-type':'Content-Type: text/html; charset=utf-8'});
+        res.writeHead(404, {'content-type':'text/html; charset=utf-8'});
         res.write('<!DOCTYPE html><html><body><h1>File not found!</h1></body></html>');
         res.end();
       }else{
         if(ext !== 'bz2'){
           fs.readFile(file, (err, data) => {
-            res.writeHead(200, {'Content-type': 'Content-Type: text/html; charset=utf-8'});
+            res.writeHead(200, {'content-type': 'text/html; charset=utf-8'});
             res.write(data);
             res.end();
           });
         }else{
           const stat = fs.statSync(file);
-          const range = req.headers.range;
-          const total = stat.size;
-          const parts = range.replace(/bytes=/, "").split("-");
-          const start = parseInt(parts[0], 10);
-          const end = parts[1] ? parseInt(parts[1], 10) : total-1;
-
-          res.writeHead(206, {
-            'content-range': 'bytes ' + start + '-' + end + '/' + total,
+          const size = stat.size;
+          res.writeHead(200, {
             'accept-ranges': 'bytes',
-            'content-length': (end-start) +1,
+            'content-length': size,
             'content-type': 'application/octet-stream'
           });
-
-          fs.createReadStream(file, {start: start, end: end}).pipe(res);
+          fs.createReadStream(file).pipe(res);
         }
       }
     }).listen(port, () => { console.log(`Webserver listening on port: ${port}`) });
