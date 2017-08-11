@@ -79,8 +79,21 @@ fastdl_add() {
     done
 }
 
+
+fastdl_bz2() {
+    find $1 -type f \( ! -iname "*.bz2" \) | while read FILE_NAME; do
+        BZ2="${FILE_NAME}.bz2"
+        if [[ ! -f "${BZ2}" ]]; then
+            echo "Archiving: ${FILE_NAME}"
+            bzip2 "${FILE_NAME}"
+        fi
+    done
+}
+
 # SQL Connections
-echo $(netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}') dockerhost >> /etc/hosts
+DOCKERHOST=$(netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}')
+echo "adding ${DOCKERHOST} to /etc/hosts as dockerhost"
+echo "${DOCKERHOST} dockerhost" >> /etc/hosts
 
 #Install the Server
 if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
@@ -121,13 +134,14 @@ if [[ ${FASTDL} == "1" ]]; then
         fi
     done
 
-    find "${FASTDL}" -type f \( ! -iname "*.bz2" \) | while read FILE_NAME; do
-        BZ2="${FILE_NAME}.bz2"
-        if [[ ! -f "${BZ2}" ]]; then
-            echo "Archiving: ${FILE_NAME}"
-            bzip2 "${FILE_NAME}"
-        fi
-    done
+    fastdl_bz2 "$FASTDL/maps"
+    fastdl_bz2 "$FASTDL/sound"
+    fastdl_bz2 "$FASTDL/resource"
+    fastdl_bz2 "$FASTDL/particles"
+    fastdl_bz2 "$FASTDL/models"
+    fastdl_bz2 "$FASTDL/materials"
+
+    echo "Fast DL finished!"
 fi
 
 cd /home/container
