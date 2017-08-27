@@ -1,41 +1,22 @@
-const { spawn } = require('child_process');
-const path = require('path');
+const { spawn, fork } = require('child_process');
 const cwd = process.cwd();
 const fs = require('fs');
+process.env.PORT = parseInt(process.argv[2]);
 
-const port = parseInt(process.argv[2]);
+const setup = () => {
+  let http = fork('/http.js', [], { cwd: cwd, env: process.env} );
+  http.on('message', (m) => {
+    console.log('HTTP:', m);
+  });
+  http.on('close', (code) => {
+    if ( code === 1 ) {
+      console.log('HTTP: CRASHED!');
+      setup();
+    }
+  });
+};
 
-if ( port && port > 0) {
-  require('http')
-    .createServer((req, res) => {
-
-      const file = path.join(cwd, 'fastdl', req['url']);
-      const ext = /(?:\.([^.]+))?$/.exec(req['url'])[1];
-
-      if(!fs.existsSync(file)){
-        res.writeHead(404, {'content-type':'text/html; charset=utf-8'});
-        res.write('<!DOCTYPE html><html><body><h1>File not found!</h1></body></html>');
-        res.end();
-      }else{
-        if(ext !== 'bz2'){
-          fs.readFile(file, (err, data) => {
-            res.writeHead(200, {'content-type': 'text/html; charset=utf-8'});
-            res.write(data);
-            res.end();
-          });
-        }else{
-          const stat = fs.statSync(file);
-          const size = stat.size;
-          res.writeHead(200, {
-            'accept-ranges': 'bytes',
-            'content-length': size,
-            'content-type': 'application/octet-stream'
-          });
-          fs.createReadStream(file).pipe(res);
-        }
-      }
-    }).listen(port, () => { console.log(`Webserver listening on port: ${port}`) });
-}
+setup();
 
 const stamp = (pattern, date) => {
   if (typeof pattern !== 'string') {
