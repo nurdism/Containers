@@ -156,7 +156,11 @@ if  [ ${FASTDL} != "1" ] && [ -z "${ALLOC_0__PORT}" ] && [ "${ALLOC_0__PORT}" !=
     exit 1
 fi
 
-node /wrapper.js ${FASTDL_PORT} ${MODIFIED_STARTUP}
+if [[ ${FASTDL} == "1" ]]; then
+    node /wrapper.js ${FASTDL_PORT} ${MODIFIED_STARTUP}
+else
+    ${MODIFIED_STARTUP}
+fi
 
 if [ $? -ne 0 ]; then
     echo "PTDL_CONTAINER_ERR: There was an error while attempting to run the start command."
