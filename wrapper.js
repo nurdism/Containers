@@ -214,16 +214,13 @@ const stamp = (pattern, date) => {
 };
 
 
-const exe =  path.join(cwd, 'Unturned_Headless.x86');
+const exe =  path.join(cwd, '7DaysToDie.x86');
 fs.access( exe, fs.constants.X_OK, (err) => {
   if (err) {
-    console.log("Error: 'Unturned_Headless.x86' is not found or is missing permissions to execute!");
+    console.log("Error: '7DaysToDie.x86' is not found or is missing permissions to execute!");
     process.exit(1);
   }
-
-  const instance = process.argv[2];
-  const logfile = path.join(cwd, `${instance}.console`);
-
+  const logfile = path.join(cwd, `server.console`);
   fs.access(logfile, fs.constants.F_OK, (err) => {
     if (err) {
       fs.closeSync(fs.openSync(logfile, 'w'));
@@ -234,8 +231,8 @@ fs.access( exe, fs.constants.X_OK, (err) => {
       console.log(`[${stamp("MM:DD HH:mm:ss")}] ${data}`);
     });
 
-    const unturned = spawn( exe, ['nographics', '-batchmode', `-logfile Servers/${instance}/unturned.log`, `+secureserver/${instance}`], { cwd,  shell: true, stdio: 'inherit' });
-    unturned.on('exit', (code) => {
+    const game = spawn( exe, ['nographics', '-batchmode', `-configfile=config.xml`,`-logfile server.log`], { cwd,  shell: true, stdio: 'inherit' });
+    game.on('exit', (code) => {
       process.exit(code);
     });
   });
