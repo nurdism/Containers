@@ -214,28 +214,29 @@ const stamp = (pattern, date) => {
 };
 
 
-const exe =  path.join(cwd, '7DaysToDie.x86');
+const exe =  path.join(cwd, '7DaysToDieServer.x86');
 fs.access( exe, fs.constants.X_OK, (err) => {
-  if (err) {
-    console.log("Error: '7DaysToDie.x86' is not found or is missing permissions to execute!");
-    process.exit(1);
-  }
-  const date = new Date().getTime();
-  const logfile = path.join(cwd, `7DaysToDieServer_Data/output_log_${date}.txt`);
-  fs.access(logfile, fs.constants.F_OK, (err) => {
     if (err) {
-      fs.closeSync(fs.openSync(logfile, 'w'));
+        console.log("Error: '7DaysToDieServer.x86' is not found or is missing permissions to execute!");
+        process.exit(1);
     }
+    const date = new Date().getTime();
+    const logfile = path.join(cwd, `7DaysToDieServer_Data/output_log_${date}.txt`);
 
-    const tail = new Tail(logfile);
-    tail.on("line", (data) => {
-      console.log(`[${stamp("MM:DD HH:mm:ss")}] ${data}`);
-    });
+    fs.access(logfile, fs.constants.F_OK, (err) => {
+        if (err) {
+            fs.closeSync(fs.openSync(logfile, 'w'));
+        }
 
-    let args = process.argv.slice(2).unshift(`-logfile`, `7DaysToDieServer_Data/output_log_${date}.txt`);
-    const game = spawn( exe, args, { cwd,  shell: true, stdio: 'inherit' });
-    game.on('exit', (code) => {
-      process.exit(code);
+        const tail = new Tail(logfile);
+        tail.on("line", (data) => {
+            console.log(`[${stamp("MM:DD HH:mm:ss")}] ${data}`);
+        });
+
+        let args = process.argv.slice(2).unshift(`-logfile`, `7DaysToDieServer_Data/output_log_${date}.txt`);
+        const game = spawn( exe, args, { cwd,  shell: true, stdio: 'inherit' });
+        game.on('exit', (code) => {
+            process.exit(code);
+        });
     });
-  });
 });
