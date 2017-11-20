@@ -220,7 +220,8 @@ fs.access( exe, fs.constants.X_OK, (err) => {
     console.log("Error: '7DaysToDie.x86' is not found or is missing permissions to execute!");
     process.exit(1);
   }
-  const logfile = path.join(cwd, `server.console`);
+  const date = new Date().getTime();
+  const logfile = path.join(cwd, `7DaysToDieServer_Data/output_log_${date}.txt`);
   fs.access(logfile, fs.constants.F_OK, (err) => {
     if (err) {
       fs.closeSync(fs.openSync(logfile, 'w'));
@@ -231,7 +232,8 @@ fs.access( exe, fs.constants.X_OK, (err) => {
       console.log(`[${stamp("MM:DD HH:mm:ss")}] ${data}`);
     });
 
-    const game = spawn( exe, ['nographics', '-batchmode', `-configfile=config.xml`,`-logfile server.log`], { cwd,  shell: true, stdio: 'inherit' });
+    let args = process.argv.slice(2).unshift(`-logfile`, `7DaysToDieServer_Data/output_log_${date}.txt`);
+    const game = spawn( exe, args, { cwd,  shell: true, stdio: 'inherit' });
     game.on('exit', (code) => {
       process.exit(code);
     });
