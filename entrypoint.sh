@@ -1,10 +1,12 @@
 #!/bin/bash
 sleep 5
 
-# steamclient.so fix
-if [[ ! -f /home/container/.steam/sdk32/steamclient.so ]]; then
-	mkdir -p /home/container/.steam/sdk32
-	cp -v /home/container/steamcmd/linux32/steamclient.so /home/container/.steam/sdk32/steamclient.so
+if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
+	if [[ -f /home/container/steam.txt ]]; then
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +runscript /home/container/steam.txt
+	else
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +quit
+	fi
 fi
 
 cd /home/container
