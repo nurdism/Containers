@@ -233,8 +233,10 @@ fs.access( exe, fs.constants.X_OK, (err) => {
             console.log(`[${stamp("MM:DD HH:mm:ss")}] ${data}`);
         });
 
-        let args = process.argv.slice(2).unshift(`-logfile`, `7DaysToDieServer_Data/output_log_${date}.txt`);
-        const game = spawn( exe, args, { cwd,  shell: true, stdio: 'inherit' });
+        let args = process.argv.slice(2);
+        args.unshift(`-logfile`, `7DaysToDieServer_Data/output_log_${date}.txt`);
+
+        const game = spawn( exe, args, { cwd, shell: true, stdio: 'inherit' });
         game.on('exit', (code) => {
             process.exit(code);
         });
