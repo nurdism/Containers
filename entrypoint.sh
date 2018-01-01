@@ -2,7 +2,7 @@
 sleep 2
 
 #Install/Update the Server
-if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
+if [[ ! -f /home/container/RustDedicated ]] || [[ ${UPDATE} == "1" ]]; then
 	if [[ -f /home/container/steam.txt ]]; then
 		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +runscript /home/container/steam.txt
 	else
