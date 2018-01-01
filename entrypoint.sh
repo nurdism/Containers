@@ -1,18 +1,24 @@
 #!/bin/bash
 sleep 2
 
-cd /home/container
+#Install/Update the Server
+if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
+	if [[ -f /home/container/steam.txt ]]; then
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +runscript /home/container/steam.txt
+	else
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +quit
+	fi
+fi
 
-# Update Rust Server
-./steam/steamcmd.sh +login anonymous +force_install_dir /home/container +app_update 258550 +quit
+cd /home/container
 
 # Replace Startup Variables
 MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')`
 echo ":/home/container$ ${MODIFIED_STARTUP}"
 
-if [ -f OXIDE_FLAG ]; then
+if [[ ${OXIDE} == "1" ]]; then
     echo "Updating OxideMod..."
-    curl -sSL "https://dl.bintray.com/oxidemod/builds/Oxide-Rust.zip" > oxide.zip
+    curl -sSL ${OXIDE_ZIP} > oxide.zip
     unzip -o -q oxide.zip
     rm oxide.zip
     echo "Done updating OxideMod!"
