@@ -1,85 +1,43 @@
-#!/usr/bin/env node
+const { exit, Tail } = require('./utility.js');
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
-var startupCmd = "";
-const fs = require("fs");
-fs.writeFile("latest.log", "");
+const date    = new Date().getTime();
 
-var args = process.argv.splice(process.execArgv.length + 2);
-for (var i = 0; i < args.length; i++) {
-    if (i === args.length - 1) {
-        startupCmd += args[i];
-    } else {
-        startupCmd += args[i] + " ";
-    }
+const cwd     = process.cwd();
+const args    = process.argv.slice(3);
+const exe     = process.argv[2];
+
+const logDir  = `logs`;
+const logFile = `rust_${date}.txt`;
+const output  = `latest.txt`;
+
+const paths ={
+    exe: path.resolve(cwd, exe),
+    log: path.join(cwd, logDir, logfile),
+    latest: path.join(cwd, logFile, output),
 }
 
-if (startupCmd.length < 1) {
-    console.log("Error: Please specify a startup command.");
-    process.exit();
+if (!fs.existsSync(path.join(cwd, logDir))) {
+    fs.mkdirSync(path.join(cwd, logDir));
 }
 
-var exec = require("child_process").exec;
-console.log("Starting Rust...");
-exec(startupCmd);
+process.stdout.pipe(fs.createWriteStream(paths.latest, { flags: 'a' }));
+args.unshift(`-logfile`, `${logDir}/${logFile}`)
 
-var waiting = true;
+fs.access(paths.exe, fs.constants.X_OK, (err) => {
+    if (err) exit(`Error: '${exe}' is not found or is missing permissions to execute!`, 1);
+    fs.access(paths.log, fs.constants.F_OK, (err) => {
+        const log = new Tail(paths.log);
+        log.on("line", (data) => {
+            console.log(data)
+        });
 
-var poll = function( ) {
-    function createPacket(command) {
-        var packet = {
-            Identifier: -1,
-            Message: command,
-            Name: "WebRcon"
-        };
-        return JSON.stringify(packet);
-    }
-
-    var serverHostname = "localhost";
-    var serverPort = process.env.RCON_PORT;
-    var serverPassword = process.env.RCON_PASS;
-    var WebSocket = require("ws");
-    var ws = new WebSocket("ws://" + serverHostname + ":" + serverPort + "/" + serverPassword);
-
-    ws.on("open", function open() {
-        waiting = false;
-        process.stdin.resume();
-        process.stdin.setEncoding("utf8");
-        var util = require("util");
-        process.stdin.on('data', function (text) {
-            ws.send(createPacket(text));
+        const server = spawn(paths.exe, args, {cwd, shell: true, stdio: 'inherit'});
+        server.on('exit', (code) => {
+            exit(`'${exe}' has exited with code ${code}!`, code);
         });
     });
+});
 
-    ws.on("message", function(data, flags) {
-        try {
-            var json = JSON.parse(data);
-            if (json !== undefined) {
-                if (json.Message !== undefined && json.Message.length > 0) {
-                    console.log(json.Message);
-                    const fs = require("fs");
-                    fs.appendFile("latest.log", "\n" + json.Message);
-                }
-            } else {
-                console.log("Error: Invalid JSON received");
-            }
-        } catch (e) {
-            if (e) {
-                console.log(e);
-            }
-        }
-    });
-
-    ws.on("error", function(err) {
-        waiting = true;
-        console.log("Waiting for RCON to come up...");
-        setTimeout(poll, 5000);
-    });
-
-    ws.on("close", function() {
-        if (!waiting) {
-            console.log("Connection to server closed.");
-            process.exit();
-        }
-    });
-}
-poll();
