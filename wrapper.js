@@ -5,8 +5,8 @@ const path = require('path')
 const fs = require('fs')
 
 const logDir   = `logs/${new Date().getTime()}`
-const logFile  = 'rust.txt'
-const rconFile = 'rcon.txt'
+const logFile  = 'rust.log'
+const rconFile = 'rcon.log'
 
 const input   = process.argv[2].split(' ')
 const cwd     = process.cwd()
@@ -17,7 +17,7 @@ const paths ={
     exe: path.resolve(cwd, exe),
     log: path.join(cwd, logDir, logFile),
     rcon: path.join(cwd, logDir, rconFile),
-    latest: path.join(cwd, 'latest.txt')
+    latest: path.join(cwd, 'latest.log')
 }
 
 function stamp(pattern, date) {
