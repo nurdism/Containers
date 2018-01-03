@@ -59,9 +59,12 @@ function stamp(pattern, date) {
 function log(message) {
     if (!message) return
     const data = `[${stamp("MM/DD HH:mm:ss")}] ${message}`
-    fs.appendFile(paths.latest, `\n${data}`)
-    console.log(data)
+    if (fs.existsSync(paths.latest)) {
+        fs.appendFile(paths.latest, `\n${data}`)
+    } else {
 
+    }
+    console.log(data)
 }
 
 function exit(err, code) {
@@ -129,6 +132,8 @@ class RCON extends EventEmitter {
         })
     }
 }
+
+fs.writeFile(paths.latest, '');
 
 fs.access(paths.exe, fs.constants.X_OK, (err) => {
     if (err) exit(`Error: '${exe}' is not found or is missing permissions to execute!`, 1)
