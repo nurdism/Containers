@@ -4,8 +4,9 @@ const WebSocket = require('ws')
 const path = require('path')
 const fs = require('fs')
 
-const logDir  = 'logs'
-const logFile = `rust_${new Date().getTime()}.txt`
+const logDir   = `logs/${new Date().getTime()}`
+const logFile  = 'rust.txt'
+const rconFile = 'rcon.txt'
 
 const input   = process.argv[2].split(' ')
 const cwd     = process.cwd()
@@ -15,61 +16,79 @@ const exe     = input[0]
 const paths ={
     exe: path.resolve(cwd, exe),
     log: path.join(cwd, logDir, logFile),
-    latest: path.join(cwd, logDir, 'latest.txt')
+    rcon: path.join(cwd, logDir, rconFile),
+    latest: path.join(cwd, 'latest.txt')
 }
 
 function stamp(pattern, date) {
     if (typeof pattern !== 'string') {
-      date = pattern
-      pattern = 'YYYY-MM-DD'
+        date = pattern
+        pattern = 'YYYY-MM-DD'
     }
 
     if (!date) date = new Date()
 
     function timestamp() {
-      const regex = /(?=(YYYY|YY|MM|DD|HH|mm|ss|ms))\1([:\/]*)/
-      const match = regex.exec(pattern)
+        const regex = /(?=(YYYY|YY|MM|DD|HH|mm|ss|ms))\1([:\/]*)/
+        const match = regex.exec(pattern)
 
-      if (match) {
-        const increment = method(match[1])
-        const val = '00' + String(date[increment[0]]() + (increment[2] || 0))
-        const res = val.slice(-increment[1]) + (match[2] || '')
-        pattern = pattern.replace(match[0], res)
-        timestamp()
-      }
+        if (match) {
+            const increment = method(match[1])
+            const val = '00' + String(date[increment[0]]() + (increment[2] || 0))
+            const res = val.slice(-increment[1]) + (match[2] || '')
+            pattern = pattern.replace(match[0], res)
+            timestamp()
+        }
     }
 
     function method(key) {
-      return ({
-        YYYY: ['getFullYear', 4],
-        YY: ['getFullYear', 2],
-        MM: ['getMonth', 2, 1],
-        DD: ['getDate', 2],
-        HH: ['getHours', 2],
-        mm: ['getMinutes', 2],
-        ss: ['getSeconds', 2],
-        ms: ['getMilliseconds', 3]
-      })[key]
+        return ({
+            YYYY: ['getFullYear', 4],
+            YY: ['getFullYear', 2],
+            MM: ['getMonth', 2, 1],
+            DD: ['getDate', 2],
+            HH: ['getHours', 2],
+            mm: ['getMinutes', 2],
+            ss: ['getSeconds', 2],
+            ms: ['getMilliseconds', 3]
+        })[key]
     }
 
     timestamp(pattern)
     return pattern
-  }
+}
 
 function log(message) {
     if (!message) return
     const data = `[${stamp("MM/DD HH:mm:ss")}] ${message}`
-    if (fs.existsSync(paths.latest)) {
-        fs.appendFile(paths.latest, `\n${data}`)
-    } else {
-
-    }
+    fs.appendFile(paths.rcon, `\n${data}`)
+    fs.appendFile(paths.latest, `\n${data}`)
     console.log(data)
 }
 
 function exit(err, code) {
     log(err.message)
     process.exit(code || 0)
+}
+
+function mkdir(path, callback) {
+    let controlled = []
+    let paths = path
+    .split('/')
+    .filter( p => p != '.')
+    .reduce((memo, item) => {
+        const prev = memo.length > 0 ? `${memo.join('/').replace(/\.\//g, '')}/` : ''
+        controlled.push(`./${prev}${item}`)
+        return [...memo, `./${prev}${item}`]
+    }, []).map(dir => {
+        fs.mkdir(dir, err => {
+            if (err && err.code != 'EEXIST') throw err
+            controlled.splice(controlled.indexOf(dir), 1)
+            if (controlled.length === 0) {
+                return callback()
+            }
+        })
+    })
 }
 
 class RCON extends EventEmitter {
@@ -133,7 +152,12 @@ class RCON extends EventEmitter {
     }
 }
 
-fs.writeFile(paths.latest, '');
+try { fs.unlinkSync(paths.latest) } catch (err) {}
+mkdir(logDir, () => {
+    fs.writeFileSync(paths.latest)
+    fs.writeFileSync(paths.rcon)
+    fs.writeFileSync(paths.log)
+})
 
 fs.access(paths.exe, fs.constants.X_OK, (err) => {
     if (err) exit(`Error: '${exe}' is not found or is missing permissions to execute!`, 1)
