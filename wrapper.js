@@ -67,7 +67,11 @@ function log(message) {
 }
 
 function exit(err, code) {
-    log(err.message)
+    if (fs.existsSync(paths.rcon)) {
+        log(err.message)
+    } else {
+        console.log(err.message)
+    }
     process.exit(code || 0)
 }
 
@@ -152,36 +156,36 @@ class RCON extends EventEmitter {
     }
 }
 
-try { fs.unlinkSync(paths.latest) } catch (err) {}
-mkdir(logDir, () => {
-    fs.writeFileSync(paths.latest)
-    fs.writeFileSync(paths.rcon)
-    fs.writeFileSync(paths.log)
-})
-
 fs.access(paths.exe, fs.constants.X_OK, (err) => {
     if (err) exit(`Error: '${exe}' is not found or is missing permissions to execute!`, 1)
 
-    log(`Starting ${exe} ...`)
+    mkdir(logDir, () => {
+        if (fs.existsSync(paths.latest)) { fs.unlinkSync(paths.latest) }
+        fs.writeFileSync(paths.latest)
+        fs.writeFileSync(paths.rcon)
+        fs.writeFileSync(paths.log)
 
-    const server = spawn(paths.exe, args, { cwd })
-    server.on('exit', (code) => exit(`'${exe}' has exited with code ${code}!`, code))
-    server.stdout.on('data', (data) => log(data))
-    server.stderr.on('data', (data) => log(data))
+        log(`Starting ${exe} ...`)
 
-    log(`Creating RCON instance ...`)
+        const server = spawn(paths.exe, args, { cwd })
+        server.on('exit', (code) => exit(`'${exe}' has exited with code ${code}!`, code))
+        server.stdout.on('data', (data) => log(data))
+        server.stderr.on('data', (data) => log(data))
 
-    const rcon = new RCON()
-    rcon.on('ready', () => {
-        log('Connected to RCON!')
-        process.stdin.resume()
-        process.stdin.setEncoding('utf8')
-        process.stdin.on('data', (text) => {
-            rcon.send(text)
+        log(`Creating RCON instance ...`)
+
+        const rcon = new RCON()
+        rcon.on('ready', () => {
+            log('Connected to RCON!')
+            process.stdin.resume()
+            process.stdin.setEncoding('utf8')
+            process.stdin.on('data', (text) => {
+                rcon.send(text)
+            })
         })
-    })
 
-    rcon.on('message', (message) => log(message))
-    rcon.on('error', (err) => log(err.message))
-    rcon.on('close', (connected) => { if (connected) log('RCON connection closed!') })
+        rcon.on('message', (message) => log(message))
+        rcon.on('error', (err) => log(err.message))
+        rcon.on('close', (connected) => { if (connected) log('RCON connection closed!') })
+    })
 })
