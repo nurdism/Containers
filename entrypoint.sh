@@ -29,7 +29,7 @@ echo ":/home/container$ ${MODIFIED_STARTUP}"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)
 
 # Run the Server
-node ./wrapper.js "${MODIFIED_STARTUP}"
+node /wrapper.js "${MODIFIED_STARTUP}"
 
 #Error
 if [ $? -ne 0 ]; then
