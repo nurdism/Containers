@@ -158,7 +158,6 @@ class RCON extends EventEmitter {
 
 fs.access(paths.exe, fs.constants.X_OK, (err) => {
     if (err) exit(`Error: '${exe}' is not found or is missing permissions to execute!`, 1)
-
     mkdir(logDir, () => {
         if (fs.existsSync(paths.latest)) { fs.unlinkSync(paths.latest) }
         fs.writeFileSync(paths.latest)
