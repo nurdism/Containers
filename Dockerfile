@@ -14,5 +14,6 @@ ENV  HOME /home/container
 WORKDIR /home/container
 
 COPY ./entrypoint.sh /entrypoint.sh
+COPY ./server.cfg /server-data/server.cfg
 
 CMD ["/bin/bash", "/entrypoint.sh"]
