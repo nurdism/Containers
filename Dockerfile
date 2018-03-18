@@ -5,16 +5,12 @@ ENV        DEBIAN_FRONTEND noninteractive
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y lib32gcc1 lib32stdc++6 unzip curl xz-utils wget git && \
-    useradd -d /home/container -m container
+    apt install -y lib32gcc1 lib32stdc++6 unzip curl xz-utils git
 
-USER container
-ENV  USER container
-ENV  HOME /home/container
-
-WORKDIR /home/container
+USER        container
+ENV         USER=container HOME=/home/container
+WORKDIR     /home/container
 
 COPY ./entrypoint.sh /entrypoint.sh
-COPY ./server.cfg /server-data/server.cfg
 
 CMD ["/bin/bash", "/entrypoint.sh"]
