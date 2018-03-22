@@ -1,16 +1,22 @@
-FROM ubuntu:16.04
+# ----------------------------------
+# Pterodactyl Core Dockerfile
+# Environment: glibc
+# Minimum Panel Version: 0.6.0
+# ----------------------------------
 
-MAINTAINER nerdism, http://github.com/nerdism
-ENV        DEBIAN_FRONTEND noninteractive
+FROM        frolvlad/alpine-glibc
 
-RUN apt update && \
-    apt upgrade -y && \
-    apt install -y lib32gcc1 lib32stdc++6 unzip curl xz-utils git
+MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
+
+RUN         apk update \
+            && apk upgrade \
+            && apk add --no-cache curl ca-certificates openssl libstdc++ git tar xz curl openssh \
+            && apk add libc++ --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+            && adduser -D -h /home/container container
 
 USER        container
 ENV         USER=container HOME=/home/container
 WORKDIR     /home/container
 
 COPY ./entrypoint.sh /entrypoint.sh
-
-CMD ["/bin/bash", "/entrypoint.sh"]
+CMD ["/bin/ash", "/entrypoint.sh"]
