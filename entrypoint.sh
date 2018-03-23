@@ -8,7 +8,10 @@ cd /home/container
 
 if [[ ! -d .git ]]; then
     echo "Downloading CitizenFX server data"
-    git clone https://github.com/citizenfx/cfx-server-data.git
+    git init
+    git remote add origin https://github.com/citizenfx/cfx-server-data.git
+    git fetch origin master
+    git checkout -t origin/master
 else
     if [[ ${UPDATE} == "1" ]]; then
         echo "Updating CitizenFX server data"
