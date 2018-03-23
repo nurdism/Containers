@@ -3,14 +3,14 @@
 # Environment: glibc
 # Minimum Panel Version: 0.6.0
 # ----------------------------------
-
 FROM        frolvlad/alpine-glibc
 
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 
 RUN         apk update \
             && apk upgrade \
-            && apk add --no-cache curl ca-certificates openssl libstdc++ git tar xz curl openssh \
+            && apk add --no-cache curl ca-certificates openssl tar xz curl git \
+            && apk add --no-cache libstdc++ \
             && apk add libc++ --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
             && adduser -D -h /home/container container
 
