@@ -22,7 +22,9 @@ fi
 
 if [[ ! -d cfx-server ]] || [[ ${UPDATE} == "1" ]]; then
     echo "Downloading CitizenFX server"
-    wget https://m-84g4dtu6fd76.runkit.sh/?q=linux -O fx.tar.xz
+    SEARCH="https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/"
+    LATEST=$(curl $SEARCH | grep '<a href' | tail -1 | awk -F[\>\<] '{print $3}')
+    wget ${SEARCH}${LATEST}fx.tar.xz -O fx.tar.xz
     tar xf fx.tar.xz alpine/opt/
     mv -f alpine/opt/cfx-server/ ./
     chmod +x ./cfx-server/FXServer
