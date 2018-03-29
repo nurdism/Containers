@@ -8,7 +8,7 @@ FROM        frolvlad/alpine-mono:5.4-glibc
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 
 RUN         apk update \
-            && apk add --no-cache openssl curl sqlite \
+            && apk add --no-cache openssl curl sqlite libgdiplus libgdiplus-dev \
             && adduser -D -h /home/container container
 
 USER        container
