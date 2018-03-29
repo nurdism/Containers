@@ -8,8 +8,8 @@ FROM alpine:edge
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 
 RUN         echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-            && apk add --update mono@testing  \
-            && apk add --no-cache openssl curl sqlite mono mono-dev \
+            && apk add --update mono@testing mono-dev@testing \
+            && apk add --no-cache openssl curl sqlite mono@testing mono-dev@testing \
             && adduser -D -h /home/container container
 
 USER        container
