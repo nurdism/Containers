@@ -3,12 +3,13 @@
 # Environment: Mono
 # Minimum Panel Version: 0.6.0
 # ----------------------------------
-FROM        frolvlad/alpine-mono:5.4-glibc
+FROM alpine:edge
 
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 
-RUN         apk update \
-            && apk add --no-cache openssl curl sqlite libgdiplus libgdiplus-dev \
+RUN         echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+            && apk add --update mono@testing  \
+            && apk add --no-cache openssl curl sqlite mono mono-dev \
             && adduser -D -h /home/container container
 
 USER        container
