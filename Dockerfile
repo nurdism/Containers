@@ -1,20 +1,26 @@
 # ----------------------------------
-# Pterodactyl Core Dockerfile
-# Environment: Mono
-# Minimum Panel Version: 0.6.0
+# Wine Dockerfile for Steam Servers
+# Environment: ubuntu:16.04 + Wine
+# Minimum Panel Version: 0.7.6
 # ----------------------------------
-FROM mono:latest
+FROM        ubuntu:16.04
 
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 
-ENV         DEBIAN_FRONTEND noninteractive
-
-RUN         apt update && \
+# Install Dependencies
+RUN         dpkg --add-architecture i386 && \
+            apt update && \
             apt upgrade -y && \
-            useradd -d /home/container -m container
+            apt install -y software-properties-common && \
+            apt update && \
+            apt install -y --install-recommends wine64 lib32gcc1 libntlm0 wget && \
+            useradd -d /home/container -m container && \
+            cd /home/container
 
 USER        container
-ENV         HOME=/home/container USER=container
+ENV         HOME /home/container
+ENV         WINEARCH win64
+ENV         WINEPREFIX /home/container/.wine64
 WORKDIR     /home/container
 
 COPY        ./entrypoint.sh /entrypoint.sh
