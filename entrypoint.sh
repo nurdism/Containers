@@ -25,7 +25,7 @@ if [ ! -z $cleanmodids ]; then
     find /home/container/steamapps/workshop/content/440900 -iname "*.pak" -exec cp {} /home/container/ConanSandbox/Mods \;
     cd /home/container/ConanSandbox/Mods
     rm modlist.txt
-    ls |grep "\.pak$" > modlist.txt
+    ls | grep "\.pak$" | sed "s/^/*/" > modlist.txt
     cd /home/container
     printf "\n\nMods updated\n\n"
   fi
