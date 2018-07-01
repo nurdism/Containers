@@ -1,9 +1,9 @@
 # ----------------------------------
 # Wine Dockerfile for Steam Servers
-# Environment: ubuntu:16.04 + Wine
+# Environment: ubuntu:18.04 + Wine
 # Minimum Panel Version: 0.7.6
 # ----------------------------------
-FROM        ubuntu:16.04
+FROM        ubuntu:18.04
 
 MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
 
