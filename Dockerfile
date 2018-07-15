@@ -16,13 +16,13 @@ RUN         dpkg --add-architecture i386 && \
 
             apt install -y --install-recommends wine64 winetricks xvfb lib32gcc1 libntlm0 wget winbind && \
 
-            su -p -l wine -c winecfg && \
-            su -p -l wine -c 'xvfb-run -a winetricks -q corefonts' && \
-            su -p -l wine -c 'xvfb-run -a winetricks -q dotnet20' && \
-            su -p -l wine -c 'xvfb-run -a winetricks -q dotnet40' && \
-            su -p -l wine -c 'xvfb-run -a winetricks -q xna40' && \
-            su -p -l wine -c 'xvfb-run -a winetricks d3dx9' && \
-            su -p -l wine -c 'xvfb-run -a winetricks -q directplay' && \
+            su -p -l root -c winecfg && \
+            su -p -l root -c 'xvfb-run -a winetricks -q corefonts' && \
+            su -p -l root -c 'xvfb-run -a winetricks -q dotnet20' && \
+            su -p -l root -c 'xvfb-run -a winetricks -q dotnet40' && \
+            su -p -l root -c 'xvfb-run -a winetricks -q xna40' && \
+            su -p -l root -c 'xvfb-run -a winetricks d3dx9' && \
+            su -p -l root -c 'xvfb-run -a winetricks -q directplay' && \
 
             apt-get autoremove -y --purge software-properties-common && \
             apt-get autoremove -y --purge xvfb && \
