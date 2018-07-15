@@ -1,39 +1,26 @@
 #!/bin/bash
-cd /home/container
+cd /home/container/server
 
 # Make internal Docker IP address available to processes.
 export INTERNAL_IP=`ip route get 1 | awk '{print $NF;exit}'`
 
-# Update Server
-if [ ! -z ${SRCDS_APPID} ]; then
-  ./steam/steamcmd.sh +@sSteamCmdForcePlatformType windows +login anonymous +force_install_dir /home/container +app_update ${SRCDS_APPID} +quit
-fi
-
-#Mod updates
-cleanmodids=$(echo ${MODIDS} | tr -d ' ')
-updatelist=""
-if [ ! -z $cleanmodids ]; then
-  #Conan Exiles
-  if [[ ${SRCDS_APPID} == "443030" ]]; then
-    printf "Updating Conan Exiles mods\n"
-    for i in $(echo $cleanmodids | sed "s/,/ /g")
-    do
-      updatelist="$updatelist +workshop_download_item 440900 $i validate"
-    done
-    ./steam/steamcmd.sh +login anonymous +force_install_dir /home/container $updatelist +quit
-    mkdir -p /home/container/ConanSandbox/Mods
-    find /home/container/steamapps/workshop/content/440900 -iname "*.pak" -exec cp {} /home/container/ConanSandbox/Mods \;
-    cd /home/container/ConanSandbox/Mods
-    rm modlist.txt
-    ls | grep "\.pak$" | sed "s/^/*/" > modlist.txt
-    cd /home/container
-    printf "\n\nMods updated\n\n"
-  fi
+#Install the Server
+if [[ ! -d /home/container/server ]] || [[ ${UPDATE} == "1" ]]; then
+	if [[ -f /home/container/steam.txt ]]; then
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container/server +app_update ${APP_ID} validate +runscript /home/container/steam.txt
+	else
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container/server +app_update ${APP_ID} validate +quit
+	fi
 fi
 
 # Replace Startup Variables
 MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')`
-echo ":/home/container$ ${MODIFIED_STARTUP}"
+echo ":/home/container/server$ ${MODIFIED_STARTUP}"
 
 # Run the Server
 ${MODIFIED_STARTUP}
+
+if [ $? -ne 0 ]; then
+    echo "PTDL_CONTAINER_ERR: There was an error while attempting to run the start command."
+    exit 1
+fi
