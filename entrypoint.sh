@@ -17,7 +17,7 @@ if [ ${FORCE_UPDATE} == "true" ]; then
 			fi
 		else
 			if [ -f ./steam.txt ]; then
-				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +runscript /home/container/steam.txt +quit
+				./steamcmd/steamcmd.sh +runscript /home/container/steam.txt
 			else
 				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +quit
 			fi
