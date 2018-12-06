@@ -1,14 +1,27 @@
 #!/bin/bash
-sleep 5
-
 cd /home/container
 
-#Install the Server
-if [[ ! -f /home/container/srcds_run ]] || [[ ${UPDATE} == "1" ]]; then
-	if [[ -f /home/container/steam.txt ]]; then
-		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +runscript /home/container/steam.txt
-	else
-		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${APP_ID} validate +quit
+sleep 1
+
+# Make internal Docker IP address available to processes.
+export INTERNAL_IP=`ip route get 1 | awk '{print $NF;exit}'`
+
+# Update Source Server
+if [ ${FORCE_UPDATE} == "true" ]; then
+	if [ ! -z ${SRCDS_APPID} ]; then
+		if [ ! -z ${SRCDS_BETAID} ]; then
+			if [ ! -z ${SRCDS_BETAPASS} ]; then
+				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} -betapassword ${SRCDS_BETAPASS} validate +quit
+			else
+				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} validate +quit
+			fi
+		else
+			if [ -f ./steam.txt ]; then
+				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +runscript /home/container/steam.txt +quit
+			else
+				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +quit
+			fi
+		fi    
 	fi
 fi
 
@@ -17,9 +30,4 @@ MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g'
 echo ":/home/container$ ${MODIFIED_STARTUP}"
 
 # Run the Server
-${MODIFIED_STARTUP}
-
-if [ $? -ne 0 ]; then
-    echo "PTDL_CONTAINER_ERR: There was an error while attempting to run the start command."
-    exit 1
-fi
+eval ${MODIFIED_STARTUP}
