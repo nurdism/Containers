@@ -3,7 +3,7 @@
 # Environment: Mono
 # Minimum Panel Version: 0.6.0
 # ----------------------------------
-FROM        frolvlad/alpine-mono:5.14
+FROM        frolvlad/alpine-mono:5.14-glibc
 
 LABEL       author="Pterodactyl Software" maintainer="support@pterodactyl.io"
 
