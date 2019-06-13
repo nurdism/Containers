@@ -3,20 +3,10 @@ sleep 2
 
 # Update Source Server
 if [ ${FORCE_UPDATE} == "true" ]; then
-	if [ ! -z ${SRCDS_APPID} ]; then
-		if [ ! -z ${SRCDS_BETAID} ]; then
-			if [ ! -z ${SRCDS_BETAPASS} ]; then
-				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} -betapassword ${SRCDS_BETAPASS} validate +quit
-			else
-				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} -beta ${SRCDS_BETAID} validate +quit
-			fi
-		else
-			if [ -f ./steam.txt ]; then
-				./steamcmd/steamcmd.sh +runscript /home/container/steam.txt
-			else
-				./steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +quit
-			fi
-		fi    
+	if [[ -f /home/container/steam.txt ]]; then
+		/home/container/steamcmd/steamcmd.sh +runscript /home/container/steam.txt
+	else
+		/home/container/steamcmd/steamcmd.sh +login ${STEAM_USER} ${STEAM_PASS} +force_install_dir /home/container +app_update ${SRCDS_APPID} validate +quit
 	fi
 fi
 
