@@ -1,9 +1,6 @@
 #!/bin/bash
 sleep 2
 
-# Make internal Docker IP address available to processes.
-export INTERNAL_IP=`ip route get 1 | awk '{print $NF;exit}'`
-
 # Update Source Server
 if [ ${FORCE_UPDATE} == "true" ]; then
 	if [ ! -z ${SRCDS_APPID} ]; then
