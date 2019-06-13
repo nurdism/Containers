@@ -1,32 +1,24 @@
+
 # ----------------------------------
-# Pterodactyl Dockerfile
-# Environment: RVR4
+# Pterodactyl Core Dockerfile
+# Environment: Source Engine
 # Minimum Panel Version: 0.6.0
 # ----------------------------------
-FROM        ubuntu:16.04
+FROM        ubuntu:18.04
 
-MAINTAINER  Pterodactyl Software, <support@pterodactyl.io>
+LABEL       author="Pterodactyl Software" maintainer="support@pterodactyl.io"
+
 ENV         DEBIAN_FRONTEND noninteractive
-ENV         USER_NAME container
-ENV         NSS_WRAPPER_PASSWD /tmp/passwd 
-ENV         NSS_WRAPPER_GROUP /tmp/group
-
 # Install Dependencies
 RUN         dpkg --add-architecture i386 \
             && apt-get update \
             && apt-get upgrade -y \
-            && apt-get install -y libnss-wrapper gettext-base tar curl gcc g++ lib32gcc1 lib32tinfo5 lib32z1 lib32stdc++6 libtinfo5:i386 libncurses5:i386 libcurl3-gnutls:i386 \
-            && useradd -m -d /home/container -s /bin/bash container \
-            && touch ${NSS_WRAPPER_PASSWD} ${NSS_WRAPPER_GROUP} \
-            && chgrp 0 ${NSS_WRAPPER_PASSWD} ${NSS_WRAPPER_GROUP} \
-            && chmod g+rw ${NSS_WRAPPER_PASSWD} ${NSS_WRAPPER_GROUP}	 		
-			
-ADD         passwd.template /passwd.template
+            && apt-get install -y tar curl gcc g++ lib32gcc1 libgcc1 libcurl4-gnutls-dev:i386 libcurl4:i386 lib32tinfo5 libtinfo5:i386 lib32z1 libstdc++6 lib32stdc++6 libncurses5:i386 libcurl3-gnutls:i386 libreadline5 libncursesw5 lib32ncursesw5 iproute2 gdb libsdl1.2debian libfontconfig telnet net-tools netcat \
+            && useradd -m -d /home/container container
 
 USER        container
 ENV         HOME /home/container
 WORKDIR     /home/container
 
-COPY        ./libnss_wrapper.so /libnss_wrapper.so
 COPY        ./entrypoint.sh /entrypoint.sh
 CMD         ["/bin/bash", "/entrypoint.sh"]

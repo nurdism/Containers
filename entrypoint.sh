@@ -1,5 +1,5 @@
 #!/bin/bash
-sleep 2
+sleep 1
 
 # Update Source Server
 if [ ${FORCE_UPDATE} == "true" ]; then
@@ -19,12 +19,6 @@ MODIFIED_STARTUP=`eval echo $(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g'
 echo "~/server: ${MODIFIED_STARTUP}"
 
 cd /home/container
-
-# $NSS_WRAPPER_PASSWD and $NSS_WRAPPER_GROUP have been set by the Dockerfile
-# export USER_ID=$(id -u)
-# export GROUP_ID=$(id -g)
-# envsubst < /passwd.template > ${NSS_WRAPPER_PASSWD}
-# export LD_PRELOAD=/libnss_wrapper.so
 
 # Run the Server
 ${MODIFIED_STARTUP}
